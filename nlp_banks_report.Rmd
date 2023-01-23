@@ -1,0 +1,10 @@
+---
+title: NLP in 2023 Macro Outlook Reports
+author: Diogo Gouveia Jr
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Every beginning of a year, most major financial players project their macroeconomic forecasts for the current year. Since this can be a very long read, we will use machine learning techniques to try to better understand these projections
+
