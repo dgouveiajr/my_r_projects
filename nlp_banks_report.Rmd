@@ -8,3 +8,22 @@ output:
 
 Every beginning of a year, most major financial players project their macroeconomic forecasts for the current year. Since this can be a very long read, we will use machine learning techniques to try to better understand these projections
 
+For this study we will use the following reports:
+
+- Goldman Sachs https://lnkd.in/eKzF_2K4
+- J.P. Morgan https://lnkd.in/eHb6-622
+- Morgan Stanley https://lnkd.in/e2nAMjmM
+- BlackRock https://lnkd.in/eYxCBRGj
+- HSBC https://lnkd.in/eNfBiJvH
+- NatWest https://lnkd.in/euftbUw6
+- Citi https://lnkd.in/eXwA-Y4X
+- Credit Suisse https://lnkd.in/e4CEK5NZ
+- BNP Paribas https://lnkd.in/ec4hWEdm
+- Deutsche Bank https://lnkd.in/eAWCSV_7
+- Apollo Global Management, Inc. https://lnkd.in/ewwq_62M
+- Wells Fargo https://lnkd.in/euMkQnKE
+- BNY Mellon https://lnkd.in/ezMfVgND
+- Fidelity International https://lnkd.in/eJwK6tVx
+
+
+
