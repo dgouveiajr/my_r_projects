@@ -26,4 +26,64 @@ For this study we will use the following reports:
 - Fidelity International https://lnkd.in/eJwK6tVx
 
 
+```{r}
 
+# Reading the PDF and storing on a list
+
+require(pdftools)
+require(tm)
+
+files <- list.files(path = "~/Documents/Investments/r_apps/my_r_projects/Reports", pattern = "pdf$")
+
+paths <- list()
+
+for(i in files) {
+  paths <- append(paths, file.path("~/Documents/Investments/r_apps/my_r_projects/Reports", i))
+}
+
+opinions <- lapply(paths, pdf_text)
+
+```
+
+```{r}
+# Creating a Data Base of PDF in Corpus (framework for text cleaning/analysis)
+
+pdfdatabase <- Corpus(URISource(paths), readerControl = list(reader = readPDF))
+opinions.tdm <- TermDocumentMatrix(pdfdatabase, control = list(removePunctuation = TRUE,
+                                                               stopwords = TRUE,
+                                                               tolower = TRUE,
+                                                               stemming = FALSE,
+                                                               removeNumbers = TRUE,
+                                                               bounds = list(global = c(3, Inf))))
+
+
+```
+
+```{r}
+#Examine 10 words at a time in across documents
+inspect(opinions.tdm[1:10,])
+
+```
+```{r}
+ft <- findFreqTerms(opinions.tdm, lowfreq = 50, highfreq = Inf)
+as.matrix(opinions.tdm[ft,])
+```
+```{r}
+#Sum the count of all frequently occurring words
+ft.tdm <- as.matrix(opinions.tdm[ft, ])
+most_occ_words <- sort(apply(ft.tdm, 1, sum), decreasing = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+data <- as.matrix(most_occ_words)
+
+```
+
+
+```{r}
+data 
+  
+
+```
