@@ -1,0 +1,73 @@
+---
+title: "Quiz 3"
+author: "Diogo Gouveia"
+format: html
+editor: visual
+---
+
+## Exercícios
+
+Identifique as distribuições de cada conjunto de dados:
+
+1.1) Data 01
+
+```         
+c(20.8625807,  7.2445709,  4.4659396,  3.2712081,  4.9300651,  5.7444213,  6.6700987,
+  11.1750446,  2.3753017,  3.5425386,  0.5978486,  6.8869953,  6.1102197,  8.2716973,
+  9.7465462,  3.3991988,  1.8557047, 11.3983705,  3.6847590,  2.3327479,  6.1364329,
+  4.4686122,  7.8007834,  4.7649257,  3.8829371,  5.9986131,  5.5163819,  9.6951710,
+  10.1645820,  6.1304865)
+```
+
+```{r}
+
+library(fitdistrplus)
+library(logspline)
+library(tidyverse)
+
+data_01 <- c(20.8625807, 7.2445709, 4.4659396, 3.2712081, 4.9300651, 5.7444213,  
+  6.6700987, 11.1750446, 2.3753017, 3.5425386, 0.5978486, 6.8869953,
+  6.1102197, 8.2716973, 9.7465462,  3.3991988,  1.8557047, 11.3983705,
+  3.6847590, 2.3327479, 6.1364329, 4.4686122,  7.8007834,  4.7649257,
+  3.8829371, 5.9986131, 5.5163819, 9.6951710, 10.1645820, 6.1304865)
+
+data_01_df <- data.frame(data_01 = data_01)
+
+hist(data_01, breaks= 30, main= 'Histograma Data 01', xlab = 'Data 01')
+lines(density(data_01), lwd=2, col= 'blue')
+```
+
+```{r}
+
+media <- mean(data_01)
+
+
+data_01_dens <- data_01_df %>% 
+  ggplot(aes(x = as.numeric(unlist(data_01_df)))) +
+  stat_density(geom = "line", alpha = 1, colour = "cornflowerblue") +
+  xlab('Data 01') +
+  ylab('Densidade')
+
+dv_pos <- 
+  ggplot_build(data_01_dens)$data[[1]] %>% 
+  filter(x > (media + (2 * sd(data_01_df$data_01))))
+
+dv_neg <- 
+  ggplot_build(data_01_dens)$data[[1]] %>% 
+  filter(x < (media - (1 * sd(data_01_df$data_01))))
+
+linha_media <- 
+  ggplot_build(data_01_dens)$data[[1]] %>% 
+  filter(x <= media)
+
+data_01_dens + 
+  geom_area(data= dv_pos, aes(x = x, y = y), fill = 'white') +
+  geom_area(data= dv_neg, aes(x = x, y = y), fill = 'pink') +
+  geom_segment(data = linha_media, aes(x = media, y = 0 , xend = media, yend = density), linetype = 'dotted') +
+  annotate(geom = "text", x = media, y = 0.01, label = "Média", 
+           fontface = "plain", angle = 90, vjust =  1.75 ) +
+  scale_x_continuous(breaks = scales::pretty_breaks(n=10)) +
+  theme(legend.position = 'right')
+
+
+```
