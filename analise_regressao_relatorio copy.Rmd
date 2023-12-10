@@ -1,0 +1,168 @@
+---
+title: "Relatório de Regressão Linear"
+author: "Diogo Xavier Gouveia Junior"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r setup, include = FALSE}
+library(reticulate)
+```
+
+```{python include=FALSE}
+import pandas as pd 
+import numpy as np 
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+
+
+data = pd.read_parquet('fund_goog.parquet')
+data['Sales Per Share']
+
+```
+
+```{python, include=FALSE}
+data.columns
+
+```
+
+
+```{python, include=FALSE}
+X = sm.add_constant(data.drop(columns=['Adj. Close']))
+
+modelo = sm.OLS(data['Adj. Close'], X).fit()
+
+print(modelo.summary(()))
+```
+### Resumo
+Este relatório descreve uma análise de regressão linear realizada para prever o preço ajustado final com base em 15 indicadores financeiros da empresa Alphabet Inc. com uma base de dados que vai de março de 2014 a julho de 2023. O estudo inclui a coleta e análise de dados, a criação do modelo de regressão, bem como a avaliação de sua precisão.
+
+### Introdução 
+Em 1866, Francis Galton faz um estudo no qual analisa a altura de pais e filhos. Ele percebe que, embora os filhos de pais altos tendessem a ser mais altos do que a média, eles não eram tão altos quanto seus pais, e vice-versa para filhos de pais mais baixos. Essa observação levou Galton a desenvolver o conceito de "regressão à média". O termo "regressão" foi cunhado por Galton para descrever o fenômeno de que filhos extremamente altos ou baixos tinham uma tendência a "regredir" em direção à média da população.
+
+A regressão linear é uma técnica estatística que visa entender as relações entre uma variável dependente e uma ou mais variáveis independentes. Usando como exemplo uma equação linear do tipo `y = b + ax` y é a variável dependente, b é a interseção entre a linha de regressão e o eixo y, x é a variável indepentende e a é o coeficiente de inclinação ou inclinação da linha de regressão. 
+
+Desde Galton, a regressão linear evoluiu ao longo do tempo e apesar do surgimento de métodos mais avançados (ex. árvores de decisão e redes neurais), ela permanece como uma técnica fundamental para modelar a relação entre variáveis dependentes e independentes. Sendo utilizada por diversas áreas, incluindo estatística, econometria, ciências sociais e aprendizado de máquina.
+
+
+### Motivação 
+A regressão linear é uma técnica estatística que visa entender as relações entre uma variável dependente, preço de fechamento final no caso do nosso estudo, e uma ou mais variáveis independentes (para variáveis independetes usaremos 15 variáveis detalhadas posteriormente nesse trabalho). 
+
+Ela se trata de uma técnica razoavelmente simples e poderosa que pode ser utilizada para uma variedade de propósitos, incluindo:
+
+- Análise de tendências: a regressão linear pode ser usada para identificar tendências, como o aumento ou a diminuição dos preços ao longo do tempo;
+
+- Previsão: a regressão linear pode ser usada para prever o comportamento futuro de um fenômeno, como a previsão do tempo ou as vendas de varejo;
+
+- Controle de qualidade: a regressão linear pode ser usada para identificar e corrigir problemas de qualidade, como variações nos preços ou na produção.
+
+A versalidade e facilidade de implementação da ferramenta são pontos fortes dessa técnica, porém faz necessário expor também as suas limitações, sendo elas:
+
+- Assunção da linearidade: Assume que a relação entre as variáveis é linear;
+
+- Sensibiliadade a outliers: A presença de outliers pode afetar significativamente as previsões;
+
+- Multicolinearidade: A presença de alta correlação entre as variáveis independentes pode levar a coeficientes pouco precisos;
+
+-Assunção da homocedasticidade: Assume que a variância dos resíduos ´constante em todos os níveis das variáveis independentes.
+
+Nesse estudo, em busca de dirimir os efeitos nocivos que as limitações citadas acima podem causar, aplicaremos técnicas de identificação e correção na base de dados. Esse estudo tem fins apenas acadêmicos e não pode ser considerado uma recomendação de investimento.
+
+### Metodologia 
+
+#### 1. Coleta de Dados: 
+
+  A base de dados para esse estudo tem cerca de 624 observações com os dados sendo coletados da base de dados 'fund_goog.parquet'. A base é composta pelos seguintes parâmetros:
+
+- Adj. Close ($): Preço ajustado de fechamento é o preço de fechamento após os ajustes para todos os desdobramentos e distribuições de dividendos aplicáveis (Variável Dependente);
+
+- EBITDA ($): Ganhos ou perdas antes de juros, impostos depreciação e amortizaçõa. É uma proxy do resultado operacional;
+
+- Total Debt ($): Soma do passivo de curto e longo prazo;
+
+- Free Cash Flow ($): Fluxo de caixa livre. Similar ao EBITDA, porém contemplando variações em necessidade de capital de giro e CAPEX;
+
+- Gross Profit Margin (%): Resultado bruto (Receita Líquida - Custos de Produção) / Receita Líquida;
+
+- Operating Margin (%): Resultado Operacional (Receita Líquida - (Custos de Produção + Despesas Administrativas e Comerciais + Depreciação e amortização [em alguns casos])) / Receita Líquida ;
+
+- Net Profit Margin (%): Lucro Líquido / Receita Líquida;
+
+- Return on Equity (%): Lucro Líquido / Média de Patrimônio Líquido;
+
+- Return on Assets (%): Lucro Líquido / Total de Ativos;
+
+- Free Cash Flow to Net Income (Ratio): Taxa de conversão de qual proporção de quanto de "caixa" vira lucro;
+
+- Current Ratio (Ratio): Ativo Circulante / Passivo Circulante. Número de vezes que o ativo circulante cobre o passivo circulante ;
+
+- Liabilities to Equity Ratio (%): Passivo Total / Patrimônio Líquido;
+
+- Debt Ratio (%): Passivo Total / Ativo Total;
+
+- Earnings Per Share (Ratio): (Lucro Líquido - Dividendos Preferenciais) / Média Ponderada do Número de Ações do Período;
+
+- Sales Per Share (Ratio): Receita Líquida / Média do Número de Ações;
+
+- Equity Per Share (Ratio): Patrimônio Líquido / Número de Ações.
+
+#### 2. Análise Exploratória de Dados (EDA): 
+
+Começamos a análise exploratória de dados checando o número de elementos de cada coluna, conforme a figura 1. Pela imagem vemos que a mostra não possui dados faltantes. 
+
+![Número de elementos de cada Coluna](~/Documents/ITA-CEDS/Análise de Regressão/num_obs.png)
+
+
+```{python}
+fig, axes = plt.subplots(nrows=4, ncols=4, figsize=(15,5))
+
+for i, col in enumerate(data.columns):
+  axes[i].hist(data[col], bins=40, color='skyblue', edgecolor='black')
+  axes[i].set_title(col)
+  axes[i].set_xlabel('Valor')
+  axes[i].set_ylabel('Frequência')
+  
+  plt.tight_layout()
+  
+  plt.show()
+```
+
+
+#### 3. Modelagem de Regressão Linear
+Um modelo de regressão linear foi criado utilizando [Inserir Software Estatístico]. As variáveis dependentes e independentes escolhidas foram [Inserir Variáveis Utilizadas no Modelo].
+
+#### 4. Avaliação do Modelo
+Foram usadas as seguintes métricas para avaliar o modelo de regressão linear:
+- Coeficiente de Determinação (R²)
+- Erro Médio Quadrático (MSE)
+- Testes de Heterocedasticidade
+- Testes de Multicolinearidade
+- Testes de Autocorrelação dos Resíduos
+
+### Resultados
+[Inserir Discussão dos Resultados, incluindo gráficos e tabelas quando apropriado]
+
+### Modelo de Regressão Linear
+[Inserir Equações, Tabela de Coeficientes e Estatísticas do Modelo]
+
+O modelo de regressão linear desenvolvido demonstra [Inserir Principais Conclusões sobre o Modelo].
+
+### Discussão
+[Inserir Discussão sobre as Descobertas do Estudo, Interpretando os Resultados]
+
+### Conclusão
+Este estudo de regressão linear fornece uma análise detalhada das relações entre [Inserir Variável Dependente] e [Inserir Variáveis Independentes]. Com base nos resultados, concluímos que [Inserir Conclusões do Estudo].
+
+### Recomendações
+[Inserir Recomendações com base nas Conclusões]
+
+### Limitações
+[Inserir Limitações do Estudo, como limitações dos dados ou suposições do modelo]
+
+### Próximos Passos
+[Inserir Passos Futuros, como coleta de dados adicionais, refinamento do modelo ou outras análises]
+
+### Referências
+- Galton, Francis. “Regression Towards Mediocrity in Hereditary Stature.” The Journal of the Anthropological Institute of Great Britain and Ireland, vol. 15, 1886, pp. 246–63. JSTOR, https://doi.org/10.2307/2841583. Accessed 10 Dec. 2023.
+
